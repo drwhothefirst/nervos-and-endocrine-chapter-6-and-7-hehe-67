@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Endocrine & Nervous System — Full Slide Quiz</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  :root{
+    --bg:#0a0e16;
+    --panel:#11172380;
+    --panel-solid:#121927;
+    --line:#23304a;
+    --text:#e8edf7;
+    --muted:#8a96b0;
+    --endo:#e9b34d;
+    --endo-soft:#e9b34d22;
+    --nerv:#4dc9e9;
+    --nerv-soft:#4dc9e922;
+    --good:#3ddc8a;
+    --good-soft:#3ddc8a22;
+    --bad:#ff6b6b;
+    --bad-soft:#ff6b6b22;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI',system-ui,-apple-system,Arial,sans-serif;
+    background:
+      radial-gradient(circle at 15% 0%, #1a2436 0%, transparent 45%),
+      radial-gradient(circle at 85% 10%, #1c1a30 0%, transparent 40%),
+      var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    padding:24px 14px 60px;
+  }
+  .wrap{max-width:880px;margin:0 auto;}
+  header{text-align:center;margin-bottom:22px;}
+  header h1{
+    font-size:1.8rem;
+    margin:0 0 6px;
+    letter-spacing:.3px;
+  }
+  header h1 span.e{color:var(--endo);}
+  header h1 span.n{color:var(--nerv);}
+  header p{color:var(--muted);margin:0;font-size:.92rem;}
+
+  .panel{
+    background:var(--panel-solid);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:16px 18px;
+    margin-bottom:16px;
+  }
+
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+  .tab{
+    border:1px solid var(--line);
+    background:#0d1320;
+    color:var(--muted);
+    padding:8px 14px;
+    border-radius:999px;
+    font-size:.85rem;
+    cursor:pointer;
+    transition:.15s;
+    user-select:none;
+  }
+  .tab:hover{border-color:#3a4a6a;color:var(--text);}
+  .tab.active{color:#0a0e16;font-weight:600;}
+  .tab.active[data-sys="all"]{background:#cfd6e6;border-color:#cfd6e6;}
+  .tab.active[data-sys="Endocrine"]{background:var(--endo);border-color:var(--endo);}
+  .tab.active[data-sys="Nervous"]{background:var(--nerv);border-color:var(--nerv);}
+
+  select#topicFilter{
+    width:100%;
+    background:#0d1320;
+    color:var(--text);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:9px 12px;
+    font-size:.88rem;
+    margin-top:4px;
+  }
+
+  .statbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:.85rem;
+    color:var(--muted);
+    margin-top:12px;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .statbar b{color:var(--text);}
+  .progress-outer{
+    height:7px;background:#0d1320;border-radius:99px;overflow:hidden;margin-top:8px;border:1px solid var(--line);
+  }
+  .progress-inner{
+    height:100%;background:linear-gradient(90deg,var(--endo),var(--nerv));width:0%;transition:width .3s;
+  }
+
+  .qcard{
+    background:var(--panel-solid);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:22px 22px 20px;
+  }
+  .qmeta{
+    display:flex;
+    gap:8px;
+    align-items:center;
+    margin-bottom:14px;
+    font-size:.74rem;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+  }
+  .pill{
+    padding:3px 10px;
+    border-radius:999px;
+    font-weight:700;
+  }
+  .pill.Endocrine{background:var(--endo-soft);color:var(--endo);}
+  .pill.Nervous{background:var(--nerv-soft);color:var(--nerv);}
+  .topicpill{color:var(--muted);background:#0d1320;border:1px solid var(--line);padding:3px 10px;border-radius:999px;font-weight:500;}
+
+  .qtext{font-size:1.18rem;line-height:1.5;margin:0 0 18px;font-weight:600;}
+
+  .options{display:grid;gap:10px;}
+  .opt{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    width:100%;
+    text-align:left;
+    background:#0d1320;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:13px 14px;
+    color:var(--text);
+    font-size:.97rem;
+    cursor:pointer;
+    transition:.12s;
+  }
+  .opt:hover:not(.locked){border-color:#4a5d85;background:#101a2c;}
+  .opt .badge{
+    flex:0 0 26px;
+    height:26px;
+    border-radius:7px;
+    background:#1a2336;
+    border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:700;font-size:.82rem;color:var(--muted);
+    align-self:center;
+  }
+  .opt span:last-child{
+    line-height:1.4;
+    padding-top:1px;
+  }
+  .opt.correct{border-color:var(--good);background:var(--good-soft);}
+  .opt.correct .badge{background:var(--good);color:#06140d;border-color:var(--good);}
+  .opt.wrong{border-color:var(--bad);background:var(--bad-soft);}
+  .opt.wrong .badge{background:var(--bad);color:#1a0707;border-color:var(--bad);}
+  .opt.locked{cursor:default;}
+  .opt.dim{opacity:.55;}
+
+  .explain{
+    margin-top:16px;
+    padding:14px 16px;
+    border-radius:12px;
+    background:#0d1320;
+    border:1px solid var(--line);
+    font-size:.9rem;
+    line-height:1.5;
+    color:#cdd6ea;
+    display:none;
+  }
+  .explain b{color:var(--text);}
+  .explain.show{display:block;}
+
+  .navrow{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:18px;
+  }
+  .btn{
+    border:none;
+    border-radius:10px;
+    padding:11px 20px;
+    font-size:.92rem;
+    font-weight:600;
+    cursor:pointer;
+    transition:.15s;
+  }
+  .btn.primary{background:linear-gradient(90deg,var(--endo),var(--nerv));color:#0a0e16;}
+  .btn.primary:disabled{opacity:.35;cursor:not-allowed;}
+  .btn.ghost{background:transparent;color:var(--muted);border:1px solid var(--line);}
+  .btn.ghost:hover{color:var(--text);border-color:#4a5d85;}
+
+  .scoretag{font-size:.85rem;color:var(--muted);}
+  .scoretag b{color:var(--good);}
+
+  .resultscreen{text-align:center;padding:30px 20px;}
+  .resultscreen .big{font-size:3rem;font-weight:800;margin:6px 0;}
+  .resultscreen .sub{color:var(--muted);margin-bottom:22px;}
+  .breakdown{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:22px;}
+  .bd-card{
+    background:#0d1320;border:1px solid var(--line);border-radius:12px;padding:14px 22px;min-width:140px;
+  }
+  .bd-card .lbl{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+  .bd-card .val{font-size:1.5rem;font-weight:700;margin-top:4px;}
+  .bd-card.endo .val{color:var(--endo);}
+  .bd-card.nerv .val{color:var(--nerv);}
+
+  footer{text-align:center;color:var(--muted);font-size:.78rem;margin-top:26px;}
+  @media (max-width:520px){
+    .qtext{font-size:1.05rem;}
+    .resultscreen .big{font-size:2.3rem;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1><span class="e">Endocrine</span> &amp; <span class="n">Nervous</span> System Quiz</h1>
+    <p>Batterjee Medical College · Preparatory Year · every slide, fully shuffled options</p>
+  </header>
+
+  <div class="panel">
+    <div class="tabs" id="sysTabs">
+      <div class="tab active" data-sys="all">All Systems</div>
+      <div class="tab" data-sys="Endocrine">Endocrine System</div>
+      <div class="tab" data-sys="Nervous">Nervous System</div>
+    </div>
+    <select id="topicFilter"></select>
+    <div class="statbar">
+      <span>Question <b id="qNumNow">0</b> of <b id="qNumTotal">0</b></span>
+      <span class="scoretag">Score: <b id="liveScore">0</b>/<span id="liveAnswered">0</span></span>
+    </div>
+    <div class="progress-outer"><div class="progress-inner" id="progressBar"></div></div>
+  </div>
+
+  <div id="quizArea"></div>
+
+  <footer>Tap the button next to each statement (A–D) — order is reshuffled every time the quiz loads.</footer>
+</div>
+
+<script>
+/* =========================================================
+   QUESTION BANK — every slide of both lectures
+   sys: Endocrine | Nervous
+   top: subtopic for the filter dropdown
+   q:   question text
+   o:   4 options (unordered — will be shuffled at render)
+   c:   index (0-3) of the correct option WITHIN this array as written
+   ex:  short explanation shown after answering
+========================================================= */
+const QUESTIONS = [
+
+/* ---------------- ENDOCRINE: Hormones & Glands Basics ---------------- */
+{sys:"Endocrine",top:"Hormones & Glands Basics",q:"What are the chemicals secreted by endocrine glands directly into the bloodstream called?",o:["Enzymes","Hormones","Neurotransmitters","Antibodies"],c:1,ex:"Hormones are chemical messengers secreted directly into the blood by endocrine glands."},
+{sys:"Endocrine",top:"Hormones & Glands Basics",q:"A hormone is best defined as a chemical messenger that does what?",o:["Destroys foreign target cells","Interacts with a receptor in a target tissue to change that tissue's function","Only acts inside the gland that produced it","Builds new bone tissue directly"],c:1,ex:"A hormone interacts with a receptor in a target tissue, causing a change in that tissue's function."},
+{sys:"Endocrine",top:"Hormones & Glands Basics",q:"Cells that have receptors for a specific hormone and therefore respond to it are called?",o:["Effector cells","Target cells","Glial cells","Osteoblasts"],c:1,ex:"Only cells with the matching receptor — target cells — will respond to a given hormone."},
+{sys:"Endocrine",top:"Hormones & Glands Basics",q:"According to the lecture, one single hormone can have how many different target cells?",o:["Only one","Many different target cells","Exactly two","None"],c:1,ex:"One hormone can act on many different target cells throughout the body."},
+{sys:"Endocrine",top:"Hormones & Glands Basics",q:"In the diagram showing Hormone A and Hormone B, a cell with receptors for BOTH hormones is described as a?",o:["Target cell for hormone A only","Target cell for hormone B only","Target cell for hormone A and B","Cell with no hormone receptors"],c:2,ex:"A cell can carry receptors for more than one hormone, making it a target cell for both."},
+{sys:"Endocrine",top:"Hormones & Glands Basics",q:"Endocrine glands are described as 'ductless' because?",o:["They lack a nucleus","Their secretions are released directly into the bloodstream rather than through a duct","They are found only in the brain","They never release any chemical"],c:1,ex:"Endocrine glands have no ducts; their hormones travel straight into the blood."},
+{sys:"Endocrine",top:"Hormones & Glands Basics",q:"Which pair of glands is given as the classic example of EXOCRINE glands (glands with ducts)?",o:["Pituitary and pineal glands","Salivary and sweat glands","Adrenal cortex and medulla","Thyroid and parathyroid glands"],c:1,ex:"Salivary and sweat glands release their secretions through ducts, making them exocrine."},
+{sys:"Endocrine",top:"Hormones & Glands Basics",q:"Which glands are described as 'mixed glands' because they have BOTH endocrine and exocrine functions?",o:["Thyroid and parathyroid","Pancreas and gonads","Pituitary and pineal","Adrenal and thymus"],c:1,ex:"The pancreas and gonads were specifically named as mixed glands in the lecture."},
+{sys:"Endocrine",top:"Hormones & Glands Basics",q:"Steroid hormones are derived from which substance?",o:["Amino acids","Cholesterol (a lipid)","Glucose","Structural proteins"],c:1,ex:"Steroid hormones are lipid-derived, built from cholesterol."},
+{sys:"Endocrine",top:"Hormones & Glands Basics",q:"After crossing the cell membrane, a steroid hormone binds to its specific receptor located in the?",o:["Nucleus exclusively","Cytoplasm","Cell surface only","Mitochondria"],c:1,ex:"Steroid hormones diffuse through the membrane and bind receptors in the cytoplasm."},
+{sys:"Endocrine",top:"Hormones & Glands Basics",q:"Which hormone is given in the slides as an example of a steroid hormone?",o:["Insulin","Growth hormone","Estrogen","Epinephrine"],c:2,ex:"Estrogen and progesterone (adrenal cortex hormones) are the slide's steroid examples."},
+{sys:"Endocrine",top:"Hormones & Glands Basics",q:"Non-steroid hormones are composed mainly of?",o:["Cholesterol","Amino acids, peptides, or proteins","Fatty acids","Glycogen"],c:1,ex:"Non-steroid hormones are amino-acid, peptide, or protein based."},
+{sys:"Endocrine",top:"Hormones & Glands Basics",q:"Because non-steroid hormones are NOT lipid-soluble, they must bind to receptors located on the?",o:["Cell surface membrane","Nuclear membrane","Mitochondrial membrane","Golgi apparatus"],c:0,ex:"Non-steroid hormones bind surface receptors and trigger an internal chain of reactions."},
+{sys:"Endocrine",top:"Hormones & Glands Basics",q:"Which hormones are given as examples of NON-steroid hormones?",o:["Testosterone and progesterone","Epinephrine, norepinephrine, and growth hormone","Cortisol and aldosterone","Estrogen and cortisol"],c:1,ex:"Epinephrine, norepinephrine, and growth hormone were listed as non-steroid examples."},
+{sys:"Endocrine",top:"Hormones & Glands Basics",q:"In the hormone classification table, Oxytocin is given as an example of which hormone class?",o:["Amine hormone","Peptide hormone","Protein hormone","Steroid hormone"],c:1,ex:"Oxytocin is a short chain of linked amino acids, making it a peptide hormone."},
+{sys:"Endocrine",top:"Hormones & Glands Basics",q:"In the hormone classification table, Human Growth Hormone exemplifies which hormone class?",o:["Amine hormone","Peptide hormone","Protein hormone","Steroid hormone"],c:2,ex:"Growth hormone is a long chain of amino acids, classifying it as a protein hormone."},
+{sys:"Endocrine",top:"Hormones & Glands Basics",q:"In the hormone classification table, Norepinephrine is listed as which hormone class?",o:["Amine hormone","Peptide hormone","Protein hormone","Steroid hormone"],c:0,ex:"Norepinephrine is an amino acid with a modified group, making it an amine hormone."},
+{sys:"Endocrine",top:"Hormones & Glands Basics",q:"In the hormone classification table, Testosterone and Progesterone are examples of which class?",o:["Amine hormone","Peptide hormone","Protein hormone","Steroid hormone"],c:3,ex:"Both are derived from cholesterol, making them steroid hormones."},
+{sys:"Endocrine",top:"Hormones & Glands Basics",q:"Which system responds to stimuli using electrical impulses traveling rapidly along neurons?",o:["Endocrine system","Nervous system","Lymphatic system","Skeletal system"],c:1,ex:"The nervous system uses fast electrical impulses along neurons."},
+{sys:"Endocrine",top:"Hormones & Glands Basics",q:"Touching a hot object and immediately pulling the arm away is used in the lecture as an example of which system's response?",o:["Endocrine system","Nervous system","Digestive system","Immune system"],c:1,ex:"This rapid, short-lived reaction illustrates the nervous system's speed."},
+{sys:"Endocrine",top:"Hormones & Glands Basics",q:"Hormones of the endocrine system travel to their target cells mainly through the?",o:["Nerve fibers","Bloodstream or intercellular fluid","Lymph nodes only","Digestive tract"],c:1,ex:"Endocrine hormones travel via blood or intercellular fluid to reach distant target cells."},
+{sys:"Endocrine",top:"Hormones & Glands Basics",q:"Sustained growth in childhood, driven by pituitary growth hormone, illustrates which feature of the endocrine system compared to the nervous system?",o:["It is much faster","Its effects can take far longer to develop","It only works in adults","It has no target tissue"],c:1,ex:"Unlike nerve responses, hormonal effects (like childhood growth) can take years."},
+{sys:"Endocrine",top:"Hormones & Glands Basics",q:"According to the comparison table, the speed of action of the NERVOUS system is described as?",o:["Can be slow","Very rapid","Completely random","Nonexistent"],c:1,ex:"The table lists the nervous system's speed of action as 'very rapid.'"},
+{sys:"Endocrine",top:"Hormones & Glands Basics",q:"According to the comparison table, the nature of the message in the ENDOCRINE system is?",o:["Electrical impulses along nerves","Chemical messages traveling in the bloodstream","Sound waves","Light signals"],c:1,ex:"Endocrine messages are chemical (hormonal) and travel through the bloodstream."},
+{sys:"Endocrine",top:"Hormones & Glands Basics",q:"According to the comparison table, the duration of an endocrine response may?",o:["Always finish within seconds","Take years before it is completed","Never start","Last only one minute"],c:1,ex:"The table notes endocrine responses 'may take years' to complete, unlike fast nerve reflexes."},
+{sys:"Endocrine",top:"Hormones & Glands Basics",q:"According to the comparison table, the area of response in the NERVOUS system is usually?",o:["Widespread throughout the body","Localized to one area of the body","Limited only to the skin","Completely random"],c:1,ex:"Nervous responses are often localized — confined to one area, unlike widespread hormonal effects."},
+{sys:"Endocrine",top:"Hormones & Glands Basics",q:"The comparison table lists reflexes such as blinking as an example process controlled by which system?",o:["Endocrine system","Nervous system","Digestive system","Lymphatic system"],c:1,ex:"Reflexes like blinking are nervous system-controlled processes."},
+{sys:"Endocrine",top:"Hormones & Glands Basics",q:"The comparison table lists growth and development of the reproductive system as a process controlled by which system?",o:["Nervous system","Endocrine system","Skeletal system","Muscular system"],c:1,ex:"Long-term processes like reproductive development are endocrine-controlled."},
+
+/* ---------------- ENDOCRINE: Hypothalamus & Pituitary ---------------- */
+{sys:"Endocrine",top:"Hypothalamus & Pituitary",q:"The endocrine system is directly tied to the nervous system through which structure?",o:["The thalamus","The hypothalamus","The cerebellum","The medulla oblongata"],c:1,ex:"The hypothalamus links the nervous and endocrine systems."},
+{sys:"Endocrine",top:"Hypothalamus & Pituitary",q:"The hypothalamus secretes releasing and inhibiting hormones that primarily control which gland?",o:["The thyroid gland","The anterior pituitary gland","The adrenal medulla","The pancreas"],c:1,ex:"Hypothalamic releasing/inhibiting hormones act on the anterior pituitary."},
+{sys:"Endocrine",top:"Hypothalamus & Pituitary",q:"Which two hormones are produced by the hypothalamus but stored and released by the posterior pituitary?",o:["TSH and ACTH","Oxytocin and Antidiuretic hormone (ADH)","Insulin and glucagon","Estrogen and testosterone"],c:1,ex:"Oxytocin and ADH are made in the hypothalamus and stored in the posterior pituitary."},
+{sys:"Endocrine",top:"Hypothalamus & Pituitary",q:"Growth hormone (GH) from the anterior pituitary stimulates the growth of?",o:["Skin and hair","Muscles and bone","Only red blood cells","Only fat tissue"],c:1,ex:"GH is a general metabolic hormone that stimulates muscle and bone growth."},
+{sys:"Endocrine",top:"Hypothalamus & Pituitary",q:"The target tissue of Prolactin (PRL) is the?",o:["Thyroid gland","Mammary gland","Adrenal cortex","Testes"],c:1,ex:"Prolactin stimulates and maintains milk production in the mammary gland."},
+{sys:"Endocrine",top:"Hypothalamus & Pituitary",q:"Adrenocorticotropic hormone (ACTH) regulates the endocrine activity of the?",o:["Adrenal medulla","Adrenal cortex","Thyroid gland","Pancreas"],c:1,ex:"ACTH specifically targets the adrenal cortex (the outer part of the adrenal gland)."},
+{sys:"Endocrine",top:"Hypothalamus & Pituitary",q:"Thyroid Stimulating Hormone (TSH) stimulates the growth and activity of the?",o:["Parathyroid gland","Thyroid gland","Thymus gland","Pineal gland"],c:1,ex:"TSH from the anterior pituitary targets the thyroid gland."},
+{sys:"Endocrine",top:"Hypothalamus & Pituitary",q:"FSH and LH (the gonadotropic hormones) stimulate the growth and functioning of the?",o:["Adrenal glands","Ovaries and testes","Pancreas","Thyroid gland"],c:1,ex:"FSH and LH act on the ovaries and testes, prompting them to produce sex hormones."},
+{sys:"Endocrine",top:"Hypothalamus & Pituitary",q:"Oxytocin's main target organ for stimulating contractions during labor is the?",o:["Kidney","Uterus","Mammary gland","Pancreas"],c:1,ex:"Oxytocin stimulates uterine contractions during labor."},
+{sys:"Endocrine",top:"Hypothalamus & Pituitary",q:"Besides stimulating labor contractions, oxytocin also causes milk ejection by acting on the?",o:["Kidney","Mammary gland","Adrenal gland","Liver"],c:1,ex:"Oxytocin's second main target is the mammary gland, causing milk ejection."},
+{sys:"Endocrine",top:"Hypothalamus & Pituitary",q:"Antidiuretic hormone (ADH) helps the kidneys to?",o:["Excrete more water","Reabsorb water back into the bloodstream","Filter out all glucose","Produce more urine"],c:1,ex:"ADH increases water reabsorption by the kidney, reducing urine output."},
+{sys:"Endocrine",top:"Hypothalamus & Pituitary",q:"The main target tissue of ADH is the?",o:["Liver","Kidney","Pancreas","Thyroid gland"],c:1,ex:"ADH's main target tissue is the kidney, where it conserves body water."},
+
+/* ---------------- ENDOCRINE: Thyroid, Parathyroid, Thymus & Pineal ---------------- */
+{sys:"Endocrine",top:"Thyroid, Parathyroid, Thymus & Pineal",q:"The pineal gland secretes which hormone, important for the sleep-wake cycle?",o:["Thymosin","Melatonin","Calcitonin","Thyroxine"],c:1,ex:"The pineal gland secretes melatonin to regulate sleep-wake rhythms."},
+{sys:"Endocrine",top:"Thyroid, Parathyroid, Thymus & Pineal",q:"Melatonin from the pineal gland regulates which biological rhythm?",o:["The menstrual cycle","The circadian (sleep-wake) rhythm","The digestive rhythm","The heartbeat rhythm"],c:1,ex:"Melatonin governs the circadian rhythm, also known as the sleep-wake cycle."},
+{sys:"Endocrine",top:"Thyroid, Parathyroid, Thymus & Pineal",q:"The thyroid gland is located at the front of the neck, just below the?",o:["Esophagus","Larynx (voice box)","Sternum","Trachea bifurcation"],c:1,ex:"The thyroid sits just below the larynx, at the front of the neck."},
+{sys:"Endocrine",top:"Thyroid, Parathyroid, Thymus & Pineal",q:"The thyroid gland roughly resembles the shape of a?",o:["Heart","Butterfly","Kidney bean","Star"],c:1,ex:"The lecture describes the thyroid as resembling a butterfly shape."},
+{sys:"Endocrine",top:"Thyroid, Parathyroid, Thymus & Pineal",q:"Thyroxine (T4) and Triiodothyronine (T3) are produced by which thyroid cells?",o:["Parafollicular (C) cells","Thyroid follicular cells","Osteoclasts","Acinar cells"],c:1,ex:"T3 and T4 are produced specifically by thyroid follicular cells."},
+{sys:"Endocrine",top:"Thyroid, Parathyroid, Thymus & Pineal",q:"T3 and T4 hormones regulate metabolic activities such as?",o:["Blood clotting only","Growth, development, and metabolism","Digestion only","Immune defense only"],c:1,ex:"T3/T4 regulate overall growth, development, and metabolic rate."},
+{sys:"Endocrine",top:"Thyroid, Parathyroid, Thymus & Pineal",q:"Calcitonin is produced by which type of thyroid cell?",o:["Follicular cells","Parafollicular (C) cells","Beta cells","Acini"],c:1,ex:"Calcitonin is secreted by the parafollicular, or C, cells of the thyroid."},
+{sys:"Endocrine",top:"Thyroid, Parathyroid, Thymus & Pineal",q:"Calcitonin's effect on blood calcium levels is to?",o:["Raise them","Lower them","Leave them unchanged","Convert calcium into phosphate"],c:1,ex:"Calcitonin lowers blood calcium levels."},
+{sys:"Endocrine",top:"Thyroid, Parathyroid, Thymus & Pineal",q:"The parathyroid glands are located on the?",o:["Anterior surface of the thymus","Posterior surface of the thyroid gland","Top of each kidney","Front of the trachea"],c:1,ex:"The four parathyroid glands sit on the posterior surface of the thyroid."},
+{sys:"Endocrine",top:"Thyroid, Parathyroid, Thymus & Pineal",q:"How many parathyroid glands does the body normally have?",o:["Two","Three","Four","Six"],c:2,ex:"There is a set of four small parathyroid glands."},
+{sys:"Endocrine",top:"Thyroid, Parathyroid, Thymus & Pineal",q:"Parathyroid hormone (PTH) primarily regulates the level of which mineral in the blood?",o:["Sodium","Potassium","Calcium","Iron"],c:2,ex:"PTH's main job is regulating blood calcium levels."},
+{sys:"Endocrine",top:"Thyroid, Parathyroid, Thymus & Pineal",q:"PTH stimulates osteoclasts to?",o:["Build new bone","Remove calcium from bone","Produce red blood cells","Store calcium inside bone"],c:1,ex:"PTH activates osteoclasts, which remove calcium from bone into the blood."},
+{sys:"Endocrine",top:"Thyroid, Parathyroid, Thymus & Pineal",q:"PTH also stimulates the kidney and intestine to?",o:["Excrete more calcium","Absorb more calcium","Excrete more glucose","Store more sodium"],c:1,ex:"PTH increases calcium absorption by the kidney and intestine."},
+{sys:"Endocrine",top:"Thyroid, Parathyroid, Thymus & Pineal",q:"The thymus gland is located?",o:["Above each kidney","Behind the sternum, between the lungs","In the neck below the larynx","Deep in the abdominal cavity"],c:1,ex:"The thymus lies behind the sternum, between the lungs, in the upper chest."},
+{sys:"Endocrine",top:"Thyroid, Parathyroid, Thymus & Pineal",q:"The thymus gland is especially important during which life stage?",o:["Old age","Pregnancy","Childhood, while the immune system develops","Sleep"],c:2,ex:"The thymus is most important in childhood, when the immune system is developing."},
+{sys:"Endocrine",top:"Thyroid, Parathyroid, Thymus & Pineal",q:"The thymus gland releases which hormone?",o:["Thymosin","Thyroxine","Thrombin","Thiamine"],c:0,ex:"Thymosin is the hormone released by the thymus gland."},
+{sys:"Endocrine",top:"Thyroid, Parathyroid, Thymus & Pineal",q:"Thymosin from the thymus stimulates the development of which cells?",o:["B cells","T cells","Red blood cells","Platelets"],c:1,ex:"Thymosin stimulates T cell development."},
+{sys:"Endocrine",top:"Thyroid, Parathyroid, Thymus & Pineal",q:"The thymus gland is the site for the maturation of?",o:["Red blood cells","T lymphocytes (white blood cells)","Platelets","Osteoclasts"],c:1,ex:"T lymphocytes mature within the thymus gland."},
+
+/* ---------------- ENDOCRINE: Adrenal Gland ---------------- */
+{sys:"Endocrine",top:"Adrenal Gland",q:"The adrenal glands are also known by which other name?",o:["Suprarenal glands","Infrarenal glands","Parathyroid glands","Gonadal glands"],c:0,ex:"'Suprarenal' literally means 'above the kidney,' matching their location."},
+{sys:"Endocrine",top:"Adrenal Gland",q:"The adrenal glands are located?",o:["Below each kidney","On top of each kidney","Behind the sternum","In the neck"],c:1,ex:"Each adrenal gland sits on top of its corresponding kidney."},
+{sys:"Endocrine",top:"Adrenal Gland",q:"The outer region of the adrenal gland, which produces steroid hormones, is called the?",o:["Adrenal medulla","Adrenal cortex","Islets of Langerhans","Zona pellucida"],c:1,ex:"The adrenal cortex is the outer region, producing steroid hormones."},
+{sys:"Endocrine",top:"Adrenal Gland",q:"The inner region of the adrenal gland, which produces catecholamine hormones, is called the?",o:["Adrenal cortex","Adrenal medulla","Zona fasciculata","Zona reticularis"],c:1,ex:"The adrenal medulla is the inner region, producing catecholamines."},
+{sys:"Endocrine",top:"Adrenal Gland",q:"Of the three zones in the adrenal cortex, which is the OUTERMOST?",o:["Zona fasciculata","Zona reticularis","Zona glomerulosa","Adrenal medulla"],c:2,ex:"Zona glomerulosa is the outermost zone of the adrenal cortex."},
+{sys:"Endocrine",top:"Adrenal Gland",q:"The zona glomerulosa produces which type of hormone, important for ion balance (e.g., aldosterone)?",o:["Glucocorticoids","Mineralocorticoids","Androgens","Catecholamines"],c:1,ex:"Mineralocorticoids like aldosterone come from the zona glomerulosa."},
+{sys:"Endocrine",top:"Adrenal Gland",q:"The zona fasciculata, situated between the other two zones, produces which hormones involved in glucose metabolism (e.g., cortisol)?",o:["Mineralocorticoids","Glucocorticoids","Androgens","Catecholamines"],c:1,ex:"Glucocorticoids such as cortisol come from the zona fasciculata."},
+{sys:"Endocrine",top:"Adrenal Gland",q:"Which is the INNERMOST layer of the adrenal cortex?",o:["Zona glomerulosa","Zona fasciculata","Zona reticularis","Adrenal medulla"],c:2,ex:"Zona reticularis is the innermost layer of the adrenal cortex."},
+{sys:"Endocrine",top:"Adrenal Gland",q:"The zona reticularis produces which hormones, including testosterone and estrogen?",o:["Mineralocorticoids","Glucocorticoids","Androgens","Catecholamines"],c:2,ex:"Zona reticularis produces androgen sex hormones such as testosterone and estrogen."},
+{sys:"Endocrine",top:"Adrenal Gland",q:"The adrenal medulla produces which two catecholamine hormones?",o:["Insulin and glucagon","Epinephrine and norepinephrine","Cortisol and aldosterone","Estrogen and testosterone"],c:1,ex:"The adrenal medulla produces epinephrine (adrenaline) and norepinephrine (noradrenaline)."},
+{sys:"Endocrine",top:"Adrenal Gland",q:"Epinephrine and norepinephrine are specifically released during the?",o:["Rest and digest response","Fight or flight response","Normal digestive process","Sleep cycle"],c:1,ex:"These catecholamines are released as part of the fight or flight response."},
+{sys:"Endocrine",top:"Adrenal Gland",q:"The fight or flight response increases heart rate, blood pressure, blood glucose, and?",o:["Digestive activity","Respiratory rate","Bone density","Insulin sensitivity"],c:1,ex:"The lecture lists increased respiratory rate among the fight-or-flight effects."},
+
+/* ---------------- ENDOCRINE: Pancreas & Gonads ---------------- */
+{sys:"Endocrine",top:"Pancreas & Gonads",q:"The endocrine function of the pancreas is carried out by clusters of cells called?",o:["Acini","Islets of Langerhans","Nephrons","Alveoli"],c:1,ex:"The islets of Langerhans contain the pancreas's hormone-secreting cells."},
+{sys:"Endocrine",top:"Pancreas & Gonads",q:"Alpha cells of the pancreas secrete which hormone?",o:["Insulin","Glucagon","Somatostatin","Cortisol"],c:1,ex:"Alpha cells secrete glucagon."},
+{sys:"Endocrine",top:"Pancreas & Gonads",q:"Glucagon acts to?",o:["Lower blood glucose level","Raise blood glucose level","Lower blood calcium","Raise blood calcium"],c:1,ex:"Glucagon raises blood glucose by stimulating glycogen breakdown."},
+{sys:"Endocrine",top:"Pancreas & Gonads",q:"Beta cells of the pancreas secrete which hormone?",o:["Glucagon","Insulin","Somatostatin","Calcitonin"],c:1,ex:"Beta cells secrete insulin."},
+{sys:"Endocrine",top:"Pancreas & Gonads",q:"Insulin acts to?",o:["Raise blood glucose level","Lower blood glucose level","Raise blood calcium","Stimulate glucagon release"],c:1,ex:"Insulin lowers blood glucose by promoting glucose uptake into cells."},
+{sys:"Endocrine",top:"Pancreas & Gonads",q:"Delta cells of the pancreas secrete which hormone, which regulates digestive processes?",o:["Insulin","Glucagon","Somatostatin","Gastrin"],c:2,ex:"Delta cells secrete somatostatin, which regulates digestion."},
+{sys:"Endocrine",top:"Pancreas & Gonads",q:"The EXOCRINE function of the pancreas — secreting digestive enzymes — is carried out by cells called?",o:["Islets of Langerhans","Acini","Beta cells","Nephrons"],c:1,ex:"Acini are the exocrine cells that secrete digestive enzymes."},
+{sys:"Endocrine",top:"Pancreas & Gonads",q:"The male gonads are called the?",o:["Ovaries","Testes","Adrenal glands","Kidneys"],c:1,ex:"The testes are the male gonads."},
+{sys:"Endocrine",top:"Pancreas & Gonads",q:"The female gonads are called the?",o:["Testes","Ovaries","Thymus","Pancreas"],c:1,ex:"The ovaries are the female gonads."},
+{sys:"Endocrine",top:"Pancreas & Gonads",q:"Gonads are classified as mixed glands because they produce sex hormones (endocrine) and also produce?",o:["Digestive enzymes","Gametes — sperm and ova (exocrine)","Sweat","Saliva"],c:1,ex:"As exocrine glands, gonads also produce gametes (sperm and ova)."},
+{sys:"Endocrine",top:"Pancreas & Gonads",q:"The two major hormones of the ovaries mentioned in the lecture are?",o:["Insulin and glucagon","Progesterone and estrogen","Testosterone and cortisol","Oxytocin and ADH"],c:1,ex:"Progesterone and estrogen are the ovaries' major hormones."},
+{sys:"Endocrine",top:"Pancreas & Gonads",q:"Progesterone's role includes preparing the uterus for?",o:["Menstruation","Pregnancy","Ovulation only","Puberty"],c:1,ex:"Progesterone prepares the uterus for pregnancy."},
+{sys:"Endocrine",top:"Pancreas & Gonads",q:"Estrogen is essential for developing the female?",o:["Primary sexual organs only","Secondary sexual characteristics","Skeletal system only","Digestive system"],c:1,ex:"Estrogen is essential for female secondary sexual characteristic development."},
+{sys:"Endocrine",top:"Pancreas & Gonads",q:"Interstitial cells of the testes secrete which hormone?",o:["Estrogen","Progesterone","Testosterone","Insulin"],c:2,ex:"Interstitial cells of the testes secrete testosterone."},
+{sys:"Endocrine",top:"Pancreas & Gonads",q:"Testosterone is responsible for male secondary sexual characteristics and also?",o:["Egg production","Sperm production","Milk production","Bone marrow production"],c:1,ex:"Testosterone also promotes sperm production."},
+
+/* ---------------- ENDOCRINE: Feedback Mechanisms & Diseases ---------------- */
+{sys:"Endocrine",top:"Feedback Mechanisms & Diseases",q:"Negative feedback occurs when the original effect of a stimulus is?",o:["Enhanced by the output","Reduced by the output","Unaffected by the output","Doubled by the output"],c:1,ex:"In negative feedback, the output reduces the original stimulus."},
+{sys:"Endocrine",top:"Feedback Mechanisms & Diseases",q:"In the negative feedback example, if thyroid hormone in the blood drops, the hypothalamus responds by secreting?",o:["TSH","ACTH","Thyrotropin Releasing Hormone (TRH)","Calcitonin"],c:2,ex:"Falling thyroid hormone triggers the hypothalamus to release TRH."},
+{sys:"Endocrine",top:"Feedback Mechanisms & Diseases",q:"TRH stimulates the anterior pituitary to release which hormone?",o:["TSH","ACTH","FSH","Oxytocin"],c:0,ex:"TRH from the hypothalamus stimulates the pituitary to release TSH."},
+{sys:"Endocrine",top:"Feedback Mechanisms & Diseases",q:"TSH then stimulates the thyroid gland to release?",o:["Calcitonin and PTH","T3 and T4","Insulin and glucagon","Cortisol and aldosterone"],c:1,ex:"TSH prompts the thyroid to release T3 and T4."},
+{sys:"Endocrine",top:"Feedback Mechanisms & Diseases",q:"Positive feedback occurs when the original effect of a stimulus is?",o:["Reduced by the output","Enhanced by the output","Eliminated entirely","Converted into a negative signal"],c:1,ex:"In positive feedback, the output amplifies (enhances) the original effect."},
+{sys:"Endocrine",top:"Feedback Mechanisms & Diseases",q:"The example of positive feedback given in the lecture involves which process?",o:["Blood clotting","Milk secretion during breastfeeding","Blood pressure regulation","Blood glucose regulation"],c:1,ex:"Milk secretion stimulated by suckling is the lecture's positive feedback example."},
+{sys:"Endocrine",top:"Feedback Mechanisms & Diseases",q:"During suckling, nerve signals stimulate the pituitary gland to secrete which hormone?",o:["Oxytocin","Prolactin","TSH","ACTH"],c:1,ex:"Suckling triggers prolactin release, which then drives milk secretion."},
+{sys:"Endocrine",top:"Feedback Mechanisms & Diseases",q:"Cushing syndrome is caused by a high level of which hormone in the blood over a long period?",o:["Insulin","Cortisol","Thyroxine","Testosterone"],c:1,ex:"Excess cortisol over time causes Cushing syndrome."},
+{sys:"Endocrine",top:"Feedback Mechanisms & Diseases",q:"Which of these is listed as a symptom of Cushing syndrome?",o:["Weight loss all over the body","Weight gain around the waist, face, and upper back","Improved skin healing","Increased energy levels"],c:1,ex:"Cushing syndrome causes characteristic central weight gain in the waist, face, and upper back."},
+{sys:"Endocrine",top:"Feedback Mechanisms & Diseases",q:"Besides thin, easily-bruised skin, Cushing syndrome also causes?",o:["Severe fatigue and muscle weakness","Improved mood and energy","Excess height growth","Stronger bones"],c:0,ex:"Severe fatigue, muscle weakness, depression, and anxiety are also Cushing symptoms."},
+{sys:"Endocrine",top:"Feedback Mechanisms & Diseases",q:"Graves' disease is an autoimmune disorder that leads to?",o:["An underactive thyroid (hypothyroidism)","An overactive thyroid (hyperthyroidism)","Adrenal insufficiency","Type 1 diabetes"],c:1,ex:"Graves' disease causes hyperthyroidism — an overactive thyroid gland."},
+{sys:"Endocrine",top:"Feedback Mechanisms & Diseases",q:"Graves' disease is caused by an abnormal immune response that makes the thyroid gland?",o:["Stop producing hormone entirely","Produce too much thyroid hormone","Shrink permanently","Produce only calcitonin"],c:1,ex:"The immune system abnormally drives the thyroid to overproduce hormone."},
+{sys:"Endocrine",top:"Feedback Mechanisms & Diseases",q:"Which of these is listed as a symptom of Graves' disease?",o:["Cold intolerance","Bulging eyes","Weight gain only","Slow heart rate"],c:1,ex:"Bulging eyes are a hallmark symptom of Graves' disease."},
+{sys:"Endocrine",top:"Feedback Mechanisms & Diseases",q:"Along with difficulty sleeping, Graves' disease also commonly causes?",o:["Anxiety","Excessive sleepiness","Bone fractures","Hair growth all over the body"],c:0,ex:"Anxiety, heat intolerance, and bulging eyes are listed Graves' disease symptoms."},
+
+/* ---------------- NERVOUS: Neurons & Neuroglia ---------------- */
+{sys:"Nervous",top:"Neurons & Neuroglia",q:"Nervous tissue contains two types of cells: neuroglial cells and?",o:["Osteocytes","Neurons","Erythrocytes","Adipocytes"],c:1,ex:"Nervous tissue is made up of neurons and neuroglial cells."},
+{sys:"Nervous",top:"Neurons & Neuroglia",q:"Neurons are described as the?",o:["Connective tissue of the nervous system","Functional units of the nervous system","Support cells only","Blood vessels of the brain"],c:1,ex:"Neurons are the functional units that transmit electrochemical signals."},
+{sys:"Nervous",top:"Neurons & Neuroglia",q:"Neuroglial cells (glia) primarily function to?",o:["Generate nerve impulses","Support and nourish neurons","Secrete hormones","Form bone tissue"],c:1,ex:"Neuroglial cells support and nourish neurons rather than transmitting impulses themselves."},
+{sys:"Nervous",top:"Neurons & Neuroglia",q:"The three distinct structures found in all neurons are the cell body, axon, and?",o:["Synapse","Dendrites","Myelin only","Node of Ranvier only"],c:1,ex:"Every neuron has a cell body, dendrites, and an axon."},
+{sys:"Nervous",top:"Neurons & Neuroglia",q:"Dendrites receive impulses from sensory receptors or other neurons and carry them?",o:["Away from the cell body","Toward the cell body","Directly into the bloodstream","Directly to muscles"],c:1,ex:"Dendrites conduct impulses toward the cell body."},
+{sys:"Nervous",top:"Neurons & Neuroglia",q:"The cell body (soma) of a neuron contains the?",o:["Myelin sheath only","Nucleus and other organelles","Synaptic vesicles only","Node of Ranvier"],c:1,ex:"The soma houses the nucleus and other organelles of the neuron."},
+{sys:"Nervous",top:"Neurons & Neuroglia",q:"The axon is the single extension of a neuron that carries impulses?",o:["Toward the cell body","Away from the cell body","Only within the dendrites","Only into the synaptic cleft"],c:1,ex:"The axon carries impulses away from the cell body toward other neurons."},
+{sys:"Nervous",top:"Neurons & Neuroglia",q:"The thick insulating lipid layer found on many axons is called the?",o:["Synaptic cleft","Myelin sheath","Node of Ranvier","Synaptic vesicle"],c:1,ex:"The myelin sheath is the lipid insulation that wraps many axons."},
+{sys:"Nervous",top:"Neurons & Neuroglia",q:"Sensory (afferent) neurons transport nerve signals from sensory receptors to the?",o:["Muscles directly","Central Nervous System (CNS)","Skin","Glands directly"],c:1,ex:"Sensory neurons carry signals from receptors toward the CNS."},
+{sys:"Nervous",top:"Neurons & Neuroglia",q:"Interneurons are located within the CNS and function to?",o:["Carry signals to muscles only","Integrate sensory input and motor output","Produce hormones","Form the myelin sheath"],c:1,ex:"Interneurons integrate incoming sensory information with outgoing motor commands."},
+{sys:"Nervous",top:"Neurons & Neuroglia",q:"Motor (efferent) neurons transport signals from the CNS to?",o:["Sensory receptors","Effector cells (muscle fiber, organ, or gland)","The brain only","The spinal cord only"],c:1,ex:"Motor neurons carry signals from the CNS out to effector cells."},
+{sys:"Nervous",top:"Neurons & Neuroglia",q:"Astrocytes (star cells) within the CNS provide structural support by holding together blood vessels and?",o:["Bone tissue","Neurons","Muscle fibers","Skin cells"],c:1,ex:"Astrocytes' thread-like branches hold blood vessels and neurons together."},
+{sys:"Nervous",top:"Neurons & Neuroglia",q:"Ependymal cells line the spinal cord and brain ventricles and are involved in creating and secreting?",o:["Blood plasma","Cerebrospinal fluid (CSF)","Synovial fluid","Bile"],c:1,ex:"Ependymal cells create and circulate cerebrospinal fluid (CSF)."},
+{sys:"Nervous",top:"Neurons & Neuroglia",q:"Within the CNS, the myelin sheath is formed by which neuroglial cell?",o:["Astrocytes","Microglia","Oligodendrocytes","Satellite cells"],c:2,ex:"Oligodendrocytes form the myelin sheath inside the CNS."},
+{sys:"Nervous",top:"Neurons & Neuroglia",q:"Microglia act as special types of macrophages in the CNS that?",o:["Produce CSF","Phagocytose and destroy microbes","Form the myelin sheath","Regulate blood pressure"],c:1,ex:"Microglia are CNS-resident immune cells that engulf and destroy microbes."},
+{sys:"Nervous",top:"Neurons & Neuroglia",q:"In the PNS, satellite cells help regulate the?",o:["Thickness of myelin","External chemical environment around neurons","Blood supply to nerves","Amount of CSF produced"],c:1,ex:"Satellite cells regulate the chemical environment surrounding PNS neurons."},
+{sys:"Nervous",top:"Neurons & Neuroglia",q:"In the PNS, the myelin sheath is formed by which cells?",o:["Oligodendrocytes","Schwann cells","Astrocytes","Ependymal cells"],c:1,ex:"Schwann cells form the myelin sheath in the peripheral nervous system."},
+
+/* ---------------- NERVOUS: CNS, Brain & Spinal Cord ---------------- */
+{sys:"Nervous",top:"CNS, Brain & Spinal Cord",q:"The Central Nervous System (CNS) consists of the brain and the?",o:["Cranial nerves","Spinal cord","Autonomic ganglia","Spinal nerves"],c:1,ex:"The CNS is made up of the brain and spinal cord."},
+{sys:"Nervous",top:"CNS, Brain & Spinal Cord",q:"The Peripheral Nervous System (PNS) consists of cranial nerves and?",o:["The brain","Spinal nerves","The spinal cord","The meninges"],c:1,ex:"The PNS consists of cranial nerves (from the brain) and spinal nerves (from the spinal cord)."},
+{sys:"Nervous",top:"CNS, Brain & Spinal Cord",q:"The outermost layer of the meninges is the?",o:["Pia mater","Arachnoid mater","Dura mater","Grey matter"],c:2,ex:"Dura mater is the tough, outermost meningeal layer."},
+{sys:"Nervous",top:"CNS, Brain & Spinal Cord",q:"The middle layer of the meninges is the?",o:["Dura mater","Arachnoid mater","Pia mater","White matter"],c:1,ex:"Arachnoid mater is the middle layer of the meninges."},
+{sys:"Nervous",top:"CNS, Brain & Spinal Cord",q:"The innermost layer of the meninges, lying closest to the brain and spinal cord, is the?",o:["Dura mater","Arachnoid mater","Pia mater","Periosteum"],c:2,ex:"Pia mater is the delicate innermost layer directly covering the brain and cord."},
+{sys:"Nervous",top:"CNS, Brain & Spinal Cord",q:"The fluid that fills the spaces between the meninges and protects the CNS is called?",o:["Synovial fluid","Cerebrospinal fluid (CSF)","Lymph","Plasma"],c:1,ex:"CSF fills the meningeal spaces and cushions the CNS."},
+{sys:"Nervous",top:"CNS, Brain & Spinal Cord",q:"The meninges protect the brain and spinal cord partly by acting as a barrier against?",o:["Sunlight","Bacteria and other microorganisms","Sound waves","Heat"],c:1,ex:"The meninges form a protective barrier against bacteria and microorganisms."},
+{sys:"Nervous",top:"CNS, Brain & Spinal Cord",q:"The brain has four main parts. Which of the following is NOT one of them according to the lecture?",o:["Cerebrum","Cerebellum","Brain stem","Hippocampus"],c:3,ex:"The four main parts listed are cerebrum, cerebellum, brain stem, and diencephalon — not the hippocampus."},
+{sys:"Nervous",top:"CNS, Brain & Spinal Cord",q:"The largest part of the brain is the?",o:["Cerebellum","Cerebrum","Brain stem","Diencephalon"],c:1,ex:"The cerebrum is described as the largest part of the brain."},
+{sys:"Nervous",top:"CNS, Brain & Spinal Cord",q:"The cerebrum is divided into two halves called the left and right?",o:["Lobes","Cerebral hemispheres","Ventricles","Cerebellar hemispheres"],c:1,ex:"The cerebrum's two halves are called the cerebral hemispheres."},
+{sys:"Nervous",top:"CNS, Brain & Spinal Cord",q:"Each cerebral hemisphere is divided into four lobes: frontal, parietal, temporal, and?",o:["Limbic","Occipital","Insular","Cerebellar"],c:1,ex:"The four cerebral lobes are frontal, parietal, temporal, and occipital."},
+{sys:"Nervous",top:"CNS, Brain & Spinal Cord",q:"The cerebellum is located at the?",o:["Front of the brain","Back of the brain","Center of the spinal cord","Very top of the skull only"],c:1,ex:"The cerebellum sits at the back of the brain, beneath the occipital and temporal lobes."},
+{sys:"Nervous",top:"CNS, Brain & Spinal Cord",q:"The cerebellum is especially important for maintaining?",o:["Memory and language","Balance and posture","Hormone secretion","Blood pressure"],c:1,ex:"The cerebellum makes postural adjustments to maintain balance."},
+{sys:"Nervous",top:"CNS, Brain & Spinal Cord",q:"Besides balance, the cerebellum also assists in?",o:["Producing hormones","Learning new motor skills","Filtering the blood","Digesting food"],c:1,ex:"The cerebellum helps with learning new motor skills, like playing piano or hitting a ball."},
+{sys:"Nervous",top:"CNS, Brain & Spinal Cord",q:"The brain stem connects the brain to the?",o:["Cerebellum","Spinal cord","Pituitary gland","Thalamus"],c:1,ex:"The brain stem is the connection between the brain and spinal cord."},
+{sys:"Nervous",top:"CNS, Brain & Spinal Cord",q:"The brain stem is made up of the midbrain, pons, and?",o:["Hippocampus","Medulla oblongata","Hypothalamus","Thalamus"],c:1,ex:"The brain stem's three parts are midbrain, pons, and medulla oblongata."},
+{sys:"Nervous",top:"CNS, Brain & Spinal Cord",q:"Nerves in the brain stem control heart rate, breathing, and?",o:["Digestion","Blood pressure","Vision","Hearing"],c:1,ex:"The brain stem controls heart rate, breathing, and blood pressure."},
+{sys:"Nervous",top:"CNS, Brain & Spinal Cord",q:"The diencephalon acts as a relay center for sensory information and?",o:["Motor responses","Digestive enzymes","Blood cell production","Hormone storage only"],c:0,ex:"The diencephalon relays both sensory information and motor responses."},
+{sys:"Nervous",top:"CNS, Brain & Spinal Cord",q:"Which two structures are specifically located within the diencephalon?",o:["Cerebellum and brain stem","Thalamus and hypothalamus","Pons and medulla","Frontal and occipital lobes"],c:1,ex:"The thalamus and hypothalamus are housed in the diencephalon."},
+{sys:"Nervous",top:"CNS, Brain & Spinal Cord",q:"The hypothalamus secretes hormones that control the?",o:["Thyroid gland directly","Pituitary gland","Adrenal medulla directly","Pancreas directly"],c:1,ex:"The hypothalamus's hormones control the pituitary gland."},
+{sys:"Nervous",top:"CNS, Brain & Spinal Cord",q:"Besides controlling the pituitary, the hypothalamus also regulates circadian rhythm, body temperature, heart rate, and?",o:["Bone growth","Blood pressure","Hair growth","Fat digestion"],c:1,ex:"The hypothalamus also regulates blood pressure and smooth muscle contraction."},
+{sys:"Nervous",top:"CNS, Brain & Spinal Cord",q:"The spinal cord extends from the brain stem and ends around which vertebral level?",o:["C1 to C7","T12 to L1","L5 to S1","S5 to Co1"],c:1,ex:"The spinal cord ends around the T12 to L1 vertebral level."},
+{sys:"Nervous",top:"CNS, Brain & Spinal Cord",q:"The spinal cord is composed of a series of how many segments?",o:["12","24","31","33"],c:2,ex:"The spinal cord has 31 segments, each giving rise to a pair of spinal nerves."},
+{sys:"Nervous",top:"CNS, Brain & Spinal Cord",q:"A pair of what structure comes out of each spinal cord segment?",o:["Cranial nerves","Spinal nerves","Ganglia only","Meninges"],c:1,ex:"Each of the 31 spinal cord segments gives rise to a pair of spinal nerves."},
+{sys:"Nervous",top:"CNS, Brain & Spinal Cord",q:"The spinal cord functions primarily in the transmission of neural signals between the brain and?",o:["The heart only","The rest of the body","The eyes only","The skin only"],c:1,ex:"The spinal cord transmits signals between the brain and the rest of the body."},
+
+/* ---------------- NERVOUS: PNS & Autonomic Nervous System ---------------- */
+{sys:"Nervous",top:"PNS & Autonomic Nervous System",q:"How many pairs of cranial nerves originate from the brain?",o:["10","12","31","8"],c:1,ex:"There are 12 pairs of cranial nerves, numbered I through XII."},
+{sys:"Nervous",top:"PNS & Autonomic Nervous System",q:"How many total pairs of spinal nerves are there?",o:["12","24","31","33"],c:2,ex:"There are 31 pairs of spinal nerves in total."},
+{sys:"Nervous",top:"PNS & Autonomic Nervous System",q:"How many pairs of CERVICAL spinal nerves are there?",o:["5 pairs","8 pairs","12 pairs","1 pair"],c:1,ex:"There are 8 pairs of cervical spinal nerves."},
+{sys:"Nervous",top:"PNS & Autonomic Nervous System",q:"How many pairs of THORACIC spinal nerves are there?",o:["5 pairs","8 pairs","12 pairs","1 pair"],c:2,ex:"There are 12 pairs of thoracic spinal nerves."},
+{sys:"Nervous",top:"PNS & Autonomic Nervous System",q:"How many pairs of LUMBAR spinal nerves are there?",o:["5 pairs","8 pairs","12 pairs","1 pair"],c:0,ex:"There are 5 pairs of lumbar spinal nerves."},
+{sys:"Nervous",top:"PNS & Autonomic Nervous System",q:"How many pairs of SACRAL spinal nerves are there?",o:["5 pairs","8 pairs","12 pairs","1 pair"],c:0,ex:"There are 5 pairs of sacral spinal nerves."},
+{sys:"Nervous",top:"PNS & Autonomic Nervous System",q:"How many COCCYGEAL nerve pairs are there?",o:["5 pairs","8 pairs","1 pair","2 pairs"],c:2,ex:"There is just 1 pair of coccygeal nerves."},
+{sys:"Nervous",top:"PNS & Autonomic Nervous System",q:"Cranial nerves may contain only sensory fibers, only motor fibers, or?",o:["Only autonomic fibers","Mixed sensory and motor fibers","Only glandular fibers","No fibers at all"],c:1,ex:"Cranial nerves can be sensory-only, motor-only, or mixed."},
+{sys:"Nervous",top:"PNS & Autonomic Nervous System",q:"The Peripheral Nervous System is subdivided into the Autonomic Nervous System and the?",o:["Central Nervous System","Somatic Nervous System","Enteric Nervous System","Limbic System"],c:1,ex:"PNS subdivisions are the Somatic and Autonomic Nervous Systems."},
+{sys:"Nervous",top:"PNS & Autonomic Nervous System",q:"The somatic nervous system regulates?",o:["Involuntary movement of smooth muscle","Voluntary movement of skeletal muscles","Hormone secretion","Heart rate only"],c:1,ex:"The somatic division controls voluntary, conscious movement of skeletal muscles."},
+{sys:"Nervous",top:"PNS & Autonomic Nervous System",q:"The autonomic nervous system regulates the activity of cardiac and smooth muscles, organs, and?",o:["Bones","Glands","Skin","Hair"],c:1,ex:"The autonomic division regulates cardiac/smooth muscle, organs, and glands."},
+{sys:"Nervous",top:"PNS & Autonomic Nervous System",q:"The sympathetic nervous system operates under conditions of stress or emergency, also known as the?",o:["Rest and digest response","Fight or flight response","Sleep response","Feeding response"],c:1,ex:"Sympathetic activation produces the 'fight or flight' response."},
+{sys:"Nervous",top:"PNS & Autonomic Nervous System",q:"The parasympathetic nervous system operates under normal conditions, also known as the?",o:["Fight or flight response","Rest and digest response","Stress response","Emergency response"],c:1,ex:"Parasympathetic activity produces the 'rest and digest' response."},
+{sys:"Nervous",top:"PNS & Autonomic Nervous System",q:"In the ANS diagram, the parasympathetic system constricts the pupil while the sympathetic system?",o:["Also constricts the pupil","Dilates the pupil","Has no effect on the pupil","Closes the eyelid"],c:1,ex:"Sympathetic stimulation dilates the pupil, opposite of parasympathetic constriction."},
+{sys:"Nervous",top:"PNS & Autonomic Nervous System",q:"In the ANS diagram, the parasympathetic system stimulates salivation while the sympathetic system?",o:["Also stimulates salivation","Inhibits salivation","Has no effect on salivation","Increases salivation tenfold"],c:1,ex:"Sympathetic activity inhibits salivation, the opposite of parasympathetic action."},
+{sys:"Nervous",top:"PNS & Autonomic Nervous System",q:"In the ANS diagram, the sympathetic system relaxes the bronchi and increases heart rate, while the parasympathetic system?",o:["Also increases heart rate","Constricts bronchi and decreases heart rate","Has no respiratory effect","Dilates the bronchi further"],c:1,ex:"Parasympathetic action constricts bronchi and slows the heart rate."},
+{sys:"Nervous",top:"PNS & Autonomic Nervous System",q:"In the ANS diagram, the parasympathetic system stimulates digestive activity while the sympathetic system?",o:["Also stimulates digestion","Inhibits digestive activity","Has no digestive effect","Doubles digestive activity"],c:1,ex:"Sympathetic activation inhibits digestion, redirecting resources elsewhere."},
+{sys:"Nervous",top:"PNS & Autonomic Nervous System",q:"In the ANS diagram, the sympathetic system stimulates the liver to release?",o:["Bile only","Glucose","Insulin","Cholesterol"],c:1,ex:"Sympathetic stimulation prompts the liver to release glucose."},
+{sys:"Nervous",top:"PNS & Autonomic Nervous System",q:"In the ANS diagram, the sympathetic system stimulates release of epinephrine and?",o:["Insulin","Norepinephrine","Cortisol only","Aldosterone only"],c:1,ex:"Sympathetic activity stimulates release of epinephrine and norepinephrine."},
+{sys:"Nervous",top:"PNS & Autonomic Nervous System",q:"In the ANS diagram, the parasympathetic system contracts the bladder while the sympathetic system?",o:["Also contracts the bladder","Relaxes the bladder","Has no effect on the bladder","Empties the bladder instantly"],c:1,ex:"Sympathetic activity relaxes the bladder, opposite of parasympathetic contraction."},
+
+/* ---------------- NERVOUS: Reflex Arc & Synapse ---------------- */
+{sys:"Nervous",top:"Reflex Arc & Synapse",q:"A reflex is defined as a?",o:["Slow, voluntary reaction to a stimulus","Rapid, involuntary reaction to a stimulus","Hormonal response to stress","Memory-based learned response"],c:1,ex:"A reflex is a rapid, involuntary reaction to a stimulus."},
+{sys:"Nervous",top:"Reflex Arc & Synapse",q:"A reflex arc is a specialized pathway by which an impulse travels from receptors to the?",o:["Brain only","Effector","Spinal cord only","Synapse only"],c:1,ex:"A reflex arc carries impulses from receptors all the way to the effector."},
+{sys:"Nervous",top:"Reflex Arc & Synapse",q:"The first step of a reflex arc is that the?",o:["Effector responds","Sensory receptor detects the stimulus","Motor neuron fires","Integration center activates"],c:1,ex:"The first step is always detection of the stimulus by a sensory receptor."},
+{sys:"Nervous",top:"Reflex Arc & Synapse",q:"The integration center of a reflex arc consists of the?",o:["Skin and muscles","Brain and spinal cord","Cranial nerves only","Synapse only"],c:1,ex:"The brain and spinal cord serve as the integration center."},
+{sys:"Nervous",top:"Reflex Arc & Synapse",q:"The final component of a reflex arc, which responds to the motor nerve impulse, is the?",o:["Sensory receptor","Interneuron","Effector (muscle or gland)","Sensory neuron"],c:2,ex:"The effector — a muscle or gland — produces the final response."},
+{sys:"Nervous",top:"Reflex Arc & Synapse",q:"A nerve impulse is best described as an?",o:["Chemical signal transmitted by a hormone","Electrical signal transmitted by a neuron","Sound wave in the ear","Mechanical pressure wave"],c:1,ex:"A nerve impulse is an electrical signal carried by a neuron."},
+{sys:"Nervous",top:"Reflex Arc & Synapse",q:"Nerve impulses are conducted along a neuron in the direction of?",o:["Axon → cell body → dendrite","Dendrite → cell body → axon","Cell body → dendrite → axon","Axon → dendrite → cell body"],c:1,ex:"Impulses travel dendrite → cell body → axon, in that fixed direction."},
+{sys:"Nervous",top:"Reflex Arc & Synapse",q:"A nerve impulse can be carried over to another neuron by means of a?",o:["Reflex arc","Synapse","Meninges","Myelin sheath"],c:1,ex:"The synapse is the junction that passes the impulse to the next neuron."},
+{sys:"Nervous",top:"Reflex Arc & Synapse",q:"A synapse is a junction where the axon of one neuron communicates with the dendrites of another, or where a neuron communicates with a?",o:["Bone or cartilage cell","Muscle or gland cell","Skin cell only","Red blood cell"],c:1,ex:"Synapses can also form between a neuron and a muscle or gland cell."},
+{sys:"Nervous",top:"Reflex Arc & Synapse",q:"The narrow space between the presynaptic and postsynaptic membranes at a synapse is called the?",o:["Synaptic vesicle","Synaptic cleft","Node of Ranvier","Axon hillock"],c:1,ex:"The synaptic cleft is the narrow gap between the two neurons."},
+{sys:"Nervous",top:"Reflex Arc & Synapse",q:"The end-bulb of the presynaptic axon contains chemicals through which neurons communicate, called?",o:["Hormones","Neurotransmitters","Digestive enzymes","Antibodies"],c:1,ex:"Neurotransmitters are stored in the presynaptic end-bulb."},
+{sys:"Nervous",top:"Reflex Arc & Synapse",q:"The membrane of the receiving neuron at a synapse, which carries receptors, is the?",o:["Presynaptic membrane","Postsynaptic membrane","Myelin sheath","Synaptic vesicle"],c:1,ex:"The postsynaptic membrane carries the receptors that bind neurotransmitter."},
+{sys:"Nervous",top:"Reflex Arc & Synapse",q:"In a CHEMICAL synapse, the presynaptic neuron releases a chemical that binds to receptors on the postsynaptic cell, called a?",o:["Hormone","Neurotransmitter","Enzyme","Antigen"],c:1,ex:"Chemical synapses work via neurotransmitter release and receptor binding."},
+{sys:"Nervous",top:"Reflex Arc & Synapse",q:"In an ELECTRICAL synapse, electrical current passes directly between neurons through?",o:["Synaptic vesicles","Certain channels","The myelin sheath","The synaptic cleft only"],c:1,ex:"Electrical synapses pass current directly through specific channels (gap junctions)."},
+{sys:"Nervous",top:"Reflex Arc & Synapse",q:"During transmission at a chemical synapse, which ions enter the axon terminal and trigger synaptic vesicles to merge with the membrane?",o:["Sodium ions","Potassium ions","Calcium ions","Chloride ions"],c:2,ex:"Calcium ion entry triggers vesicle fusion and neurotransmitter release."},
+{sys:"Nervous",top:"Reflex Arc & Synapse",q:"After being released into the synaptic cleft, neurotransmitter molecules diffuse across and bind with specific?",o:["Hormones","Receptor proteins","Digestive enzymes","Antibodies"],c:1,ex:"Neurotransmitters bind to specific receptor proteins on the postsynaptic membrane."},
+{sys:"Nervous",top:"Reflex Arc & Synapse",q:"The enzyme that breaks down the neurotransmitter acetylcholine is called?",o:["Acetylcholinesterase (AChE)","Amylase","Lipase","Thyroxine"],c:0,ex:"Acetylcholinesterase (AChE) inactivates acetylcholine in the synaptic cleft."},
+{sys:"Nervous",top:"Reflex Arc & Synapse",q:"Besides enzymatic breakdown, a neurotransmitter can also be cleared from the synaptic cleft by being reabsorbed by the?",o:["Postsynaptic membrane","Presynaptic (sending) membrane","Myelin sheath","Synaptic cleft itself"],c:1,ex:"The presynaptic membrane can reabsorb neurotransmitter for repackaging or breakdown."},
+{sys:"Nervous",top:"Reflex Arc & Synapse",q:"Which two neurotransmitter examples are specifically named in the lecture?",o:["Dopamine and serotonin","Acetylcholine and adrenaline","GABA and glycine","Insulin and glucagon"],c:1,ex:"Acetylcholine and adrenaline are the two neurotransmitter examples given."},
+
+/* ---------------- NERVOUS: Nervous System Disorders ---------------- */
+{sys:"Nervous",top:"Nervous System Disorders",q:"Multiple sclerosis (MS) is a chronic disease that causes damage to which structure surrounding neurons?",o:["The cell body","The myelin sheath","The dendrites only","The synaptic cleft"],c:1,ex:"MS damages the myelin sheath surrounding neurons, hardening it into sclerosis."},
+{sys:"Nervous",top:"Nervous System Disorders",q:"Multiple sclerosis is classified as what type of disorder, where the immune system attacks a protein in the sheath?",o:["Genetic disorder only","Autoimmune disorder","Infectious disease","Nutritional deficiency"],c:1,ex:"MS is an autoimmune disorder targeting a protein component of the myelin sheath."},
+{sys:"Nervous",top:"Nervous System Disorders",q:"As a demyelinating disease, MS disrupts the nervous system's ability to?",o:["Produce hormones","Transmit signals","Filter the blood","Digest food"],c:1,ex:"Demyelination disrupts the nervous system's signal transmission."},
+{sys:"Nervous",top:"Nervous System Disorders",q:"Which of these is listed as a symptom of multiple sclerosis?",o:["Improved vision","Double vision and vision loss","Increased muscle strength","Better balance"],c:1,ex:"Double vision and vision loss are listed MS symptoms."},
+{sys:"Nervous",top:"Nervous System Disorders",q:"Other symptoms of MS mentioned include muscle weakness and?",o:["Loss of balance","Improved coordination","Excess hunger","Hair loss"],c:0,ex:"Muscle weakness and loss of balance are both listed MS symptoms."},
+{sys:"Nervous",top:"Nervous System Disorders",q:"Alzheimer's disease is described in the lecture as a?",o:["Bacterial infection","Neurodegenerative disease","Autoimmune joint disease","Genetic blood disorder"],c:1,ex:"Alzheimer's is a neurodegenerative disease that worsens progressively."},
+{sys:"Nervous",top:"Nervous System Disorders",q:"Alzheimer's disease is the cause of approximately what percentage of dementia cases?",o:["10–20%","30–40%","60–70%","90–100%"],c:2,ex:"Alzheimer's accounts for roughly 60–70% of dementia cases."},
+{sys:"Nervous",top:"Nervous System Disorders",q:"The brains of Alzheimer's patients show large deposits of an abnormal protein called?",o:["Myelin basic protein","Beta amyloid","Hemoglobin","Collagen"],c:1,ex:"Beta amyloid deposits accumulate around neurons in Alzheimer's disease."},
+{sys:"Nervous",top:"Nervous System Disorders",q:"The most common EARLY symptom of Alzheimer's disease is?",o:["Loss of vision","Difficulty remembering recent events","Sudden paralysis","High fever"],c:1,ex:"Difficulty remembering recent events is the most common early symptom."},
+{sys:"Nervous",top:"Nervous System Disorders",q:"As Alzheimer's disease advances, symptoms can include problems with language, disorientation, and?",o:["Improved motivation","Mood swings and self-neglect","Increased appetite only","Faster reflexes"],c:1,ex:"Advanced Alzheimer's brings mood swings, loss of motivation, and self-neglect."},
+
+];
+
+/* ===================== APP LOGIC ===================== */
+const TOPIC_MAP = {
+  all: ["__ALL__"],
+  Endocrine: [
+    "Hormones & Glands Basics","Hypothalamus & Pituitary",
+    "Thyroid, Parathyroid, Thymus & Pineal","Adrenal Gland",
+    "Pancreas & Gonads","Feedback Mechanisms & Diseases"
+  ],
+  Nervous: [
+    "Neurons & Neuroglia","CNS, Brain & Spinal Cord",
+    "PNS & Autonomic Nervous System","Reflex Arc & Synapse",
+    "Nervous System Disorders"
+  ]
+};
+
+let currentSys = "all";
+let currentTopic = "__ALL__";
+let pool = [];
+let idx = 0;
+let score = 0;
+let answered = 0;
+let locked = false;
+
+const topicFilterEl = document.getElementById("topicFilter");
+const quizArea = document.getElementById("quizArea");
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function buildTopicOptions(){
+  topicFilterEl.innerHTML = "";
+  const allOpt = document.createElement("option");
+  allOpt.value = "__ALL__";
+  allOpt.textContent = currentSys === "all" ? "All Topics" : "All Topics in " + currentSys;
+  topicFilterEl.appendChild(allOpt);
+
+  let topics = [];
+  if(currentSys === "all"){
+    topics = TOPIC_MAP.Endocrine.concat(TOPIC_MAP.Nervous);
+  } else {
+    topics = TOPIC_MAP[currentSys];
+  }
+  topics.forEach(t=>{
+    const o = document.createElement("option");
+    o.value = t;
+    o.textContent = t;
+    topicFilterEl.appendChild(o);
+  });
+  topicFilterEl.value = "__ALL__";
+  currentTopic = "__ALL__";
+}
+
+function buildPool(){
+  pool = QUESTIONS.filter(q=>{
+    const sysOk = (currentSys === "all") || (q.sys === currentSys);
+    const topOk = (currentTopic === "__ALL__") || (q.top === currentTopic);
+    return sysOk && topOk;
+  });
+  pool = shuffle(pool);
+  idx = 0; score = 0; answered = 0; locked = false;
+  document.getElementById("qNumTotal").textContent = pool.length;
+  updateStats();
+  renderQuestion();
+}
+
+function updateStats(){
+  document.getElementById("qNumNow").textContent = pool.length ? Math.min(idx+1, pool.length) : 0;
+  document.getElementById("liveScore").textContent = score;
+  document.getElementById("liveAnswered").textContent = answered;
+  const pct = pool.length ? (Math.min(idx, pool.length) / pool.length) * 100 : 0;
+  document.getElementById("progressBar").style.width = pct + "%";
+}
+
+function renderQuestion(){
+  locked = false;
+  updateStats();
+  if(pool.length === 0){
+    quizArea.innerHTML = '<div class="qcard"><p style="color:var(--muted);text-align:center;">No questions match this filter.</p></div>';
+    return;
+  }
+  if(idx >= pool.length){
+    renderResults();
+    return;
+  }
+  const item = pool[idx];
+  const letters = ["A","B","C","D"];
+  const optObjs = item.o.map((text,i)=>({text, correct: i===item.c}));
+  const shuffledOpts = shuffle(optObjs);
+
+  let html = `<div class="qcard">
+    <div class="qmeta">
+      <span class="pill ${item.sys}">${item.sys}</span>
+      <span class="topicpill">${item.top}</span>
+    </div>
+    <p class="qtext">${item.q}</p>
+    <div class="options" id="optionsBox">`;
+
+  shuffledOpts.forEach((opt,i)=>{
+    html += `<button class="opt" data-correct="${opt.correct}" data-idx="${i}">
+      <span class="badge">${letters[i]}</span><span>${opt.text}</span>
+    </button>`;
+  });
+
+  html += `</div>
+    <div class="explain" id="explainBox"><b>Explanation:</b> ${item.ex}</div>
+    <div class="navrow">
+      <button class="btn ghost" id="skipBtn">Skip</button>
+      <button class="btn primary" id="nextBtn" disabled>Next Question →</button>
+    </div>
+  </div>`;
+
+  quizArea.innerHTML = html;
+
+  document.querySelectorAll(".opt").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      if(locked) return;
+      locked = true;
+      answered++;
+      const isCorrect = btn.dataset.correct === "true";
+      if(isCorrect) score++;
+
+      document.querySelectorAll(".opt").forEach(b=>{
+        b.classList.add("locked");
+        if(b.dataset.correct === "true"){
+          b.classList.add("correct");
+        } else if(b === btn){
+          b.classList.add("wrong");
+        } else {
+          b.classList.add("dim");
+        }
+      });
+      document.getElementById("explainBox").classList.add("show");
+      document.getElementById("nextBtn").disabled = false;
+      updateStats();
+    });
+  });
+
+  document.getElementById("nextBtn").addEventListener("click", ()=>{
+    idx++;
+    renderQuestion();
+  });
+  document.getElementById("skipBtn").addEventListener("click", ()=>{
+    idx++;
+    renderQuestion();
+  });
+}
+
+function renderResults(){
+  const pct = answered ? Math.round((score/answered)*100) : 0;
+  const endoTotal = pool.filter(q=>q.sys==="Endocrine").length;
+  const nervTotal = pool.filter(q=>q.sys==="Nervous").length;
+
+  quizArea.innerHTML = `
+  <div class="qcard resultscreen">
+    <div style="color:var(--muted);font-size:.9rem;">Quiz complete</div>
+    <div class="big">${pct}%</div>
+    <div class="sub">You scored ${score} out of ${answered} answered questions</div>
+    <div class="breakdown">
+      <div class="bd-card endo"><div class="lbl">Endocrine Qs</div><div class="val">${endoTotal}</div></div>
+      <div class="bd-card nerv"><div class="lbl">Nervous Qs</div><div class="val">${nervTotal}</div></div>
+    </div>
+    <button class="btn primary" id="restartBtn">Restart with Same Filter</button>
+  </div>`;
+  document.getElementById("restartBtn").addEventListener("click", buildPool);
+  updateStats();
+}
+
+document.querySelectorAll("#sysTabs .tab").forEach(tab=>{
+  tab.addEventListener("click", ()=>{
+    document.querySelectorAll("#sysTabs .tab").forEach(t=>t.classList.remove("active"));
+    tab.classList.add("active");
+    currentSys = tab.dataset.sys;
+    buildTopicOptions();
+    buildPool();
+  });
+});
+
+topicFilterEl.addEventListener("change", ()=>{
+  currentTopic = topicFilterEl.value;
+  buildPool();
+});
+
+/* init */
+buildTopicOptions();
+buildPool();
+</script>
+</body>
+</html>
